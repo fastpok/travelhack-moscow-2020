@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% from "macros.html" import render_string_field %}
+
+{% block title %}Редактирование музея | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Редактирование музея</h5>
+    <div class="card-body">
+      <form method="POST" action="/edit/museum-{{ museum._id }}">
+        {{ form.csrf_token }}
+        {{ render_string_field(form.title, museum.title) }}
+        {{ render_string_field(form.image_url, museum.image_url) }}
+        {{ render_string_field(form.latitude, museum.latitude) }}
+        {{ render_string_field(form.longitude, museum.longitude) }}
+        <div class="mb-3">
+          <a href="/exhibitions">Перейти к выставкам</a>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

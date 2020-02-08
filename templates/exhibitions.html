@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Выставки | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Выставки музея "{{ museum.title }}"</h5>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Название</th>
+            <th scope="col">Описание</th>
+            <th scope="col">URL картинки</th>
+            <th scope="col">Языки</th>
+            <th scope="col">Время</th>
+            <th scope="col">Тип</th>
+            <th scope="col">Экспонаты</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exhibition in exhibitions %}
+            <tr>
+              <td>{{ exhibition._id }}</td>
+              <td>{{ exhibition.title }}</td>
+              <td>
+                {% if exhibition.description|length > 15 %}
+                  {{ exhibition.description[:15] + "..." }}
+                {% else %}
+                  {{ exhibition.description }}
+                {% endif %}
+              </td>
+              <td>
+                {% if exhibition.image_url|length > 15 %}
+                  <a href="{{ exhibition.image_url }}" data-toggle="tooltip" data-placement="top" title="{{ exhibition.image_url }}">
+                    {{ exhibition.image_url[:15] + "..." }}
+                  </a>
+                {% else %}
+                  <a href="{{ exhibition.image_url }}" data-toggle="tooltip" data-placement="top" title="{{ exhibition.image_url }}">
+                    {{ exhibition.image_url }}
+                  </a>
+                {% endif %}
+              </td>
+              <td>{{ exhibition.languages }}</td>
+              <td>{{ exhibition.time }}</td>
+              <td>{{ exhibition.type }}</td>
+              <td>{{ exhibition.items|length }}</td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Редактировать">
+                  <button type="button" class="btn btn-link p-0" onclick="redirect('{{ exhibitionid }}')">
+                    <i class="far fa-edit"></i>
+                  </button>
+                </span>
+              </td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Удалить">
+                  <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#deleteExhibitionModal" data-exhibitionid="{{ exhibition._id }}" data-exhibitiontitle="{{ exhibition.title }}">
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a class="btn btn-primary" href="/museum-{{ museum.id }}/add_exhibition">Добавить выставку</a>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteExhibitionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteExhibitionModalTitle">Подтвердите действие</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+          <button type="button" class="btn btn-primary" id="deleteSubmitBtn">Подтвердить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block endbody %}
+  <script type="text/javascript">
+    $('#deleteExhibitionModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var exhibitionID = button.data('exhibitionid')
+      var exhibitionTitle = button.data('exhibitiontitle')
+      var modal = $(this)
+      modal.find('.modal-body').text('Вы уверены, что хотите удалить выставку \"' + exhibitionTitle + '\"?')
+      $('#deleteSubmitBtn').on('click', function () {
+        location.href = "/delete/exhibition-" + exhibitionID;
+      })
+    })
+    function redirect(exhibitionID) {
+      location.href = "/edit/exhibition-" + exhibitionID;
+    }
+  </script>
+{% endblock %}
