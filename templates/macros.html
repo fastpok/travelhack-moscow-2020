@@ -1,0 +1,19 @@
+{% macro render_string_field(field, preset_value) %}
+  <div class="form-group">
+    <label for="{{ field.name }}">{{ field.label.text }}</label>
+    {% if field.errors %}
+      {{ field(class_='form-control is-invalid', **kwargs)|safe }}
+      <div class="invalid-feedback">
+        {% for error in field.errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% if preset_value %}
+        {{ field(class_='form-control', value=preset_value, **kwargs)|safe }}
+      {% else %}
+        {{ field(class_='form-control', **kwargs)|safe }}
+      {% endif %}
+    {% endif %}
+  </div>
+{% endmacro %}
