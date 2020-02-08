@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% from "macros.html" import render_string_field %}
+
+{% block title %}Добавление музея | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Добавление музея</h5>
+    <div class="card-body">
+      <form method="POST" action="/add_museum">
+        {{ form.csrf_token }}
+        {{ render_string_field(form.title, None) }}
+        {{ render_string_field(form.image_url, None) }}
+        {{ render_string_field(form.latitude, None) }}
+        {{ render_string_field(form.longitude, None) }}
+        <button type="submit" class="btn btn-primary">Добавить музей</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

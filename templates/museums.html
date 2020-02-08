@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Музеи | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Музеи</h5>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Название</th>
+            <th scope="col">URL картинки</th>
+            <th scope="col">Широта</th>
+            <th scope="col">Долгота</th>
+            <th scope="col">Выставки</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for museum in museums %}
+            <tr>
+              <td>{{ museum._id }}</td>
+              <td>{{ museum.title }}</td>
+              <td>
+                {% if museum.image_url|length > 15 %}
+                  <a href="{{ museum.image_url }}" data-toggle="tooltip" data-placement="top" title="{{ museum.image_url }}">
+                    {{ museum.image_url[:15] + "..." }}
+                  </a>
+                {% else %}
+                  <a href="{{ museum.image_url }}" data-toggle="tooltip" data-placement="top" title="{{ museum.image_url }}">
+                    {{ museum.image_url }}
+                  </a>
+                {% endif %}
+              </td>
+              <td>{{ museum.latitude }}</td>
+              <td>{{ museum.longitude }}</td>
+              <td>{{ museum.exhibitions|length }}</td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Редактировать">
+                  <button type="button" class="btn btn-link p-0" onclick="editMuseumRedirect('{{ museum._id }}')">
+                    <i class="far fa-edit"></i>
+                  </button>
+                </span>
+              </td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Удалить">
+                  <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#deleteMuseumModal" data-museumid="{{ museum._id }}" data-museumtitle="{{ museum.title }}">
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a class="btn btn-primary" href="/add_museum">Добавить музей</a>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteMuseumModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteMuseumModalTitle">Подтвердите действие</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+          <button type="button" class="btn btn-primary" id="deleteSubmitBtn">Подтвердить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block endbody %}
+  <script type="text/javascript">
+    $('#deleteMuseumModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var museumID = button.data('museumid')
+      var museumTitle = button.data('museumtitle')
+      var modal = $(this)
+      modal.find('.modal-body').text('Вы уверены, что хотите удалить музей \"' + museumTitle + '\"?')
+      $('#deleteSubmitBtn').on('click', function () {
+        var url = new URL("http://207.154.213.35:5000/delete_museum");
+        url.searchParams.append('museum_id', museumID);
+        location.href = url;
+      })
+    })
+    function editMuseumRedirect(museumID) {
+      var url = new URL("http://207.154.213.35:5000/edit_museum");
+      url.searchParams.append('museum_id', museumID);
+      location.href = url;
+    }
+  </script>
+{% endblock %}
