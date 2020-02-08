@@ -17,3 +17,10 @@
     {% endif %}
   </div>
 {% endmacro %}
+
+{% macro render_select_field(field) %}
+  <div class="form-group">
+    <label for="{{ field.name }}">{{ field.label.text }}</label>
+      {{ field(class_='form-control', **kwargs)|safe }}
+  </div>
+{% endmacro %}

@@ -3,16 +3,22 @@ from wtforms import StringField, DecimalField, FieldList, FormField, SelectField
 from wtforms.validators import DataRequired
 
 class ItemForm(FlaskForm):
+  class Meta:
+    csrf = False
+    
   description = StringField(label='Описание', validators=[DataRequired()])
 
 class LanguageForm(FlaskForm):
+  class Meta:
+    csrf = False
+
   language = StringField(label='Язык', validators=[DataRequired()])
 
 class ExhibitionForm(FlaskForm):
   title = StringField(label='Название', validators=[DataRequired()])
   description = StringField(label='Описание', validators=[DataRequired()])
   image_url = StringField(label='URL картинки', validators=[DataRequired()])
-  languages = FieldList(FormField(LanguageForm), label="Языки")
+  languages = FieldList(FormField(LanguageForm), label="Языки", min_entries=1)
   time = StringField(label='Время', validators=[DataRequired()])
   type = SelectField(label='Тип', choices=[('Постоянная', 'Постоянная'), ('Временная', 'Временная')])
   items = FieldList(FormField(ItemForm), label="Экспонаты")
