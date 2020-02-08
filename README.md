@@ -1,2 +1,2 @@
 # travelhack-moscow-2020
-Travelhack Moscow 2020 (Team WaitorIT) Backend
+Travelhack Moscow 2020 (Team WaitorIT) Admin page
