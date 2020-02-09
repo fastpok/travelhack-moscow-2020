@@ -74,11 +74,14 @@ def add_exhibition():
   museum = getMuseumByID(museum_id)
   form = ExhibitionForm()
   if form.validate_on_submit():
+    #FIXME
+    if type(form.languages.data[0]) is not str:
+      languages = [str(x['language']) for x in form.languages.data]
     exhibition = Exhibition(
       title = form.title.data,
       description = form.description.data,
       image_url = form.image_url.data,
-      languages = form.languages.data,
+      languages = languages,
       time = form.time.data,
       type = form.type.data,
       items = []
@@ -102,17 +105,18 @@ def edit_exhibition():
   museum = getMuseumByID(museum_id)
   exhibition_id = request.args.get('exhibition_id')
   exhibition = getExhibitionByID(museum_id, exhibition_id)
-  print(exhibition_id)
-  print(exhibition)
   museum_ref = db.collection(u'museums').document(museum_id)
   form = ExhibitionForm()
   if form.validate_on_submit():
+    #FIXME
+    if type(form.languages.data[0]) is not str:
+      languages = [str(x['language']) for x in form.languages.data]
     museum_ref.update({u'exhibitions': firestore.ArrayRemove([exhibition.to_dict()])})
     exhibition = Exhibition(
       title = form.title.data,
       description = form.description.data,
       image_url = form.image_url.data,
-      languages = form.languages.data,
+      languages = languages,
       time = form.time.data,
       type = form.type.data,
       items = exhibition.items,
