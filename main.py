@@ -95,7 +95,7 @@ def delete_exhibition():
   museum_ref.update({u'exhibitions': firestore.ArrayRemove([exhibition.to_dict()])})
   return redirect("/exhibitions?museum_id=" + museum_id)
 
-@app.route('/edit_exhibition')
+@app.route('/edit_exhibition', methods=('GET', 'POST'))
 def edit_exhibition():
   museum_id = request.args.get('museum_id')
   museum = getMuseumByID(museum_id)
@@ -103,8 +103,10 @@ def edit_exhibition():
   exhibition = getExhibitionByID(museum_id, exhibition_id)
   museum_ref = db.collection(u'museums').document(museum_id)
   exhibition = getExhibitionByID(museum_id, exhibition_id)
+  print(exhibition_id, museum_id)
   form = ExhibitionForm()
   if form.validate_on_submit():
+    museum_ref.update({u'exhibitions': firestore.ArrayRemove([exhibition.to_dict()])})
     exhibition = Exhibition(
       title = form.title.data,
       description = form.description.data,
@@ -115,7 +117,6 @@ def edit_exhibition():
       items = exhibition.items,
       _id = exhibition_id
     )
-    museum_ref.update({u'exhibitions': firestore.ArrayRemove([exhibition.to_dict()])})
     save_exhibition(museum_id, exhibition)
     return redirect("/exhibitions?museum_id=" + museum_id)
   return render_template('edit_exhibition.html', form=form, museum=museum, exhibition=exhibition)
