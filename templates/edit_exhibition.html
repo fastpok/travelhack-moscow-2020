@@ -29,6 +29,9 @@
       </div>
       {{ render_string_field(form.time, exhibition.time) }}
       {{ render_select_field(form.type, exhibition.type) }}
+      <div class="mb-3">
+        <a href="/items?museum_id={{ museum._id }}&exhibition_id={{ exhibition._id }}">Перейти к экспонатам</a>
+      </div>
       <button type="submit" class="btn btn-primary">Сохрнить изменения</button>
     </form>
   </div>

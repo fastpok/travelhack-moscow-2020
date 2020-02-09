@@ -6,7 +6,8 @@ from firebase_admin import firestore
 
 from museum import Museum
 from exhibition import Exhibition
-from forms import MuseumForm, ExhibitionForm
+from item import Item
+from forms import MuseumForm, ExhibitionForm, ItemForm
 
 app = Flask(__name__)
 app.secret_key = "pen pineapple apple pen"
@@ -101,9 +102,9 @@ def edit_exhibition():
   museum = getMuseumByID(museum_id)
   exhibition_id = request.args.get('exhibition_id')
   exhibition = getExhibitionByID(museum_id, exhibition_id)
+  print(exhibition_id)
+  print(exhibition)
   museum_ref = db.collection(u'museums').document(museum_id)
-  exhibition = getExhibitionByID(museum_id, exhibition_id)
-  print(exhibition_id, museum_id)
   form = ExhibitionForm()
   if form.validate_on_submit():
     museum_ref.update({u'exhibitions': firestore.ArrayRemove([exhibition.to_dict()])})
@@ -120,6 +121,14 @@ def edit_exhibition():
     save_exhibition(museum_id, exhibition)
     return redirect("/exhibitions?museum_id=" + museum_id)
   return render_template('edit_exhibition.html', form=form, museum=museum, exhibition=exhibition)
+
+@app.route('/items')
+def items():
+  museum_id = request.args.get('museum_id')
+  museum = getMuseumByID(museum_id)
+  exhibition_id = request.args.get('exhibition_id')
+  exhibition = getExhibitionByID(museum_id, exhibition_id)
+  return render_template('items.html', museum=museum, exhibition=exhibition)
 
 def save_museum(museum):
   db.collection(u'museums').document(museum._id).set(museum.to_dict())
@@ -139,5 +148,4 @@ def getExhibitionByID(museum_id, exhibition_id):
   for exhibition in museum.exhibitions:
     if exhibition._id == exhibition_id:
       return exhibition
-    else:
-      return None
+  return None

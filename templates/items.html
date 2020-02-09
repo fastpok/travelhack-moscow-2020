@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Экспонаты | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Экспонаты выставки "{{ exhibition.title }}" музея "{{ museum.title }}"</h5>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Название</th>
+            <th scope="col">Описание</th>
+            <th scope="col">Изображения</th>
+            <th scope="col">Аудиозаписи</th>
+            <th scope="col">Автор</th>
+            <th scope="col">iBeacon UUID</th>
+            <th scope="col">iBeacon major ID</th>
+            <th scope="col">iBeacon minor ID</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in exhibition.items %}
+            <tr>
+              <td>{{ item._id }}</td>
+              <td>{{ item.title }}</td>
+              <td>
+                {% if item.description|length > 15 %}
+                  {{ item.description[:15] + "..." }}
+                {% else %}
+                  {{ item.description }}
+                {% endif %}
+              </td>
+              <td>
+                {% if ', '.join(item.images)|length > 15 %}
+                  {{ ', '.join(item.images)[:15] + "..." }}
+                {% else %}
+                  {{ ', '.join(item.images) }}
+                {% endif %}
+              </td>
+              <td>
+                {% if ', '.join(item.audio_files)|length > 15 %}
+                  {{ ', '.join(item.audio_files)[:15] + "..." }}
+                {% else %}
+                  {{ ', '.join(item.audio_files) }}
+                {% endif %}
+              </td>
+              <td>{{ item.author }}</td>
+              <td>
+                {% if item.ibeacon_uuid|length > 15 %}
+                  {{ item.ibeacon_uuid[:15] + "..." }}
+                {% else %}
+                  {{ item.ibeacon_uuid }}
+                {% endif %}
+              </td>
+              <td>
+                {% if item.ibeacon_major_id|length > 15 %}
+                  {{ item.ibeacon_major_id[:15] + "..." }}
+                {% else %}
+                  {{ item.ibeacon_major_id }}
+                {% endif %}
+              </td>
+              <td>
+                {% if item.ibeacon_minor_id|length > 15 %}
+                  {{ item.ibeacon_minor_id[:15] + "..." }}
+                {% else %}
+                  {{ item.ibeacon_minor_id }}
+                {% endif %}
+              </td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Редактировать">
+                  <button type="button" class="btn btn-link p-0" onclick="editItemRedirect('{{ museum._id }}', '{{ exhibition._id }}', '{{ item._id }}')">
+                    <i class="far fa-edit"></i>
+                  </button>
+                </span>
+              </td>
+              <td>
+                <span data-toggle="tooltip" data-placement="top" title="Удалить">
+                  <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#deleteItemModal" data-museumid="{{ museum._id }}" data-exhibitionid="{{ exhibition._id }}" data-itemid="{{ item._id }}" data-itemtitle="{{ item.title }}">
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a class="btn btn-primary" href="/add_item?museum_id={{ museum._id }}&exhibition_id={{ exhibition._id }}">Добавить экспонат</a>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteItemModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteItemModalTitle">Подтвердите действие</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+          <button type="button" class="btn btn-primary" id="deleteSubmitBtn">Подтвердить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block endbody %}
+  <script type="text/javascript">
+    $('#deleteItemModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var museumID = button.data('museumid')
+      var exhibitionID = button.data('exhibitionid')
+      var itemID = button.data('itemid')
+      var itemTitle = button.data('itemtitle')
+      var modal = $(this)
+      modal.find('.modal-body').text('Вы уверены, что хотите удалить экспонат \"' + itemTitle + '\"?')
+      $('#deleteSubmitBtn').on('click', function () {
+        var url = new URL("http://207.154.213.35:5000/delete_item")
+        url.searchParams.append('museum_id', museumID)
+        url.searchParams.append('exhibition_id', exhibitionID)
+        url.searchParams.append('item_id', itemID)
+        location.href = url
+      })
+    })
+    function editItemRedirect(museumID, exhibitionID) {
+      var url = new URL("http://207.154.213.35:5000/edit_item")
+      url.searchParams.append('museum_id', museumID)
+      url.searchParams.append('exhibition_id', exhibitionID)
+      url.searchParams.append('item_id', itemID)
+      location.href = url
+    }
+  </script>
+{% endblock %}
