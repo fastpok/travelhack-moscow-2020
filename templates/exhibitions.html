@@ -50,14 +50,14 @@
               <td>{{ exhibition.items|length }}</td>
               <td>
                 <span data-toggle="tooltip" data-placement="top" title="Редактировать">
-                  <button type="button" class="btn btn-link p-0" onclick="redirect('{{ exhibitionid }}')">
+                  <button type="button" class="btn btn-link p-0" onclick="editExhibitionRedirect('{{ museum._id }}', '{{ exhibition._id }}')">
                     <i class="far fa-edit"></i>
                   </button>
                 </span>
               </td>
               <td>
                 <span data-toggle="tooltip" data-placement="top" title="Удалить">
-                  <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#deleteExhibitionModal" data-exhibitionid="{{ exhibition._id }}" data-exhibitiontitle="{{ exhibition.title }}">
+                  <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#deleteExhibitionModal" data-museumid="{{ museum._id }}" data-exhibitionid="{{ exhibition._id }}" data-exhibitiontitle="{{ exhibition.title }}">
                     <i class="far fa-trash-alt"></i>
                   </button>
                 </span>
@@ -66,7 +66,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <a class="btn btn-primary" href="/museum-{{ museum.id }}/add_exhibition">Добавить выставку</a>
+      <a class="btn btn-primary" href="/add_exhibition?museum_id={{ museum._id }}">Добавить выставку</a>
     </div>
   </div>
 
@@ -93,16 +93,23 @@
   <script type="text/javascript">
     $('#deleteExhibitionModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget)
+      var museumID = button.data('museumid')
       var exhibitionID = button.data('exhibitionid')
       var exhibitionTitle = button.data('exhibitiontitle')
       var modal = $(this)
       modal.find('.modal-body').text('Вы уверены, что хотите удалить выставку \"' + exhibitionTitle + '\"?')
       $('#deleteSubmitBtn').on('click', function () {
-        location.href = "/delete/exhibition-" + exhibitionID;
+        var url = new URL("http://207.154.213.35:5000/delete_exhibition")
+        url.searchParams.append('museum_id', museumID)
+        url.searchParams.append('exhibition_id', exhibitionID)
+        location.href = url
       })
     })
-    function redirect(exhibitionID) {
-      location.href = "/edit/exhibition-" + exhibitionID;
+    function editExhibitionRedirect(museumID, exhibitionID) {
+      var url = new URL("http://207.154.213.35:5000/edit_exhibition")
+      url.searchParams.append('museum_id', museumID)
+      url.searchParams.append('exibition_id', exhibitionID)
+      location.href = url
     }
   </script>
 {% endblock %}

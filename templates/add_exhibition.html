@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% from "macros.html" import render_string_field, render_select_field %}
+
+{% block title %}Добавление выставки | Панель администратора{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">Добавление выставки</h5>
+    <div class="card-body">
+      <form method="POST" action="/add_exhibition?museum_id={{ museum._id }}">
+        {{ form.csrf_token }}
+        {{ render_string_field(form.title, None) }}
+        {{ render_string_field(form.description, None) }}
+        {{ render_string_field(form.image_url, None) }}
+        <div class="form-group" >
+          <label for="{{ form.languages.name }}">{{ form.languages.label.text }}</label>
+          <div class="ml-4">
+            <div id="languages-wrapper">
+              <input id="languages-0-language" class="form-control mb-3" name="languages-0-language" required="" type="text" value="">
+            </div>
+            <div>
+              <button type="button" class="btn btn-outline-primary btn-sm mr-2" id="pop-language"><i class="fas fa-minus"></i></button>
+              <button type="button" class="btn btn-outline-primary btn-sm" id="push-language"><i class="fas fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+        {{ render_string_field(form.time, None) }}
+        {{ render_select_field(form.type) }}
+        
+        <button type="submit" class="btn btn-primary">Добавить выставку</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block endbody %}
+<script>
+  $("#push-language").click(function () {
+    let i = $("#languages-wrapper input").length
+    $("#languages-wrapper").append('<input id="languages-' + i + '-language" class="form-control mb-3" name="languages-' + i + '-language" required="" type="text" value="">')
+    
+  })
+  $("#pop-language").click(function () {
+    if ($("#languages-wrapper input").length > 1) {
+      $("#languages-wrapper input").last().remove()
+    }
+  })
+</script>
+{% endblock %}
